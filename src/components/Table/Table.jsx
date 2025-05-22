@@ -41,9 +41,7 @@ export const Table = ({ visibleProducts }) => {
             <td
               data-cy="ProductUser"
               className={
-                product.owner?.sex === 'f'
-                  ? 'has-text-danger'
-                  : 'has-text-link'
+                product.owner?.sex === 'f' ? 'has-text-danger' : 'has-text-link'
               }
             >
               {product.owner?.name}

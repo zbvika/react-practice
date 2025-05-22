@@ -17,8 +17,7 @@ export const Header = ({
           data-cy="FilterAllUsers"
           href="#/"
           className={!activeOwnerId ? 'is-active' : ''}
-          onClick={e => {
-            e.preventDefault();
+          onClick={() => {
             setActiveOwnerId(null);
           }}
         >
@@ -31,8 +30,7 @@ export const Header = ({
             data-cy="FilterAllUsers"
             href="#/"
             className={activeOwnerId === owner.id ? 'is-active' : ''}
-            onClick={e => {
-              e.preventDefault();
+            onClick={() => {
               setActiveOwnerId(owner.id);
             }}
           >
@@ -69,9 +67,12 @@ export const Header = ({
         </p>
       </div>
 
-      {/* Категорії поки залишаємо тут */}
       <div className="panel-block is-flex-wrap-wrap">
-        <a href="#/" data-cy="AllCategories" className="button is-success mr-6 is-outlined">
+        <a
+          href="#/"
+          data-cy="AllCategories"
+          className="button is-success mr-6 is-outlined"
+        >
           All
         </a>
 
@@ -96,8 +97,7 @@ export const Header = ({
         <a
           data-cy="ResetAllButton"
           href="#/"
-          onClick={e => {
-            e.preventDefault();
+          onClick={() => {
             resetFilters();
           }}
           className={`button is-link is-fullwidth ${isNoFilterActive ? 'is-outlined' : ''}`}

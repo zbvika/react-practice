@@ -10,7 +10,9 @@ import { Table } from './components/Table';
 import { Header } from './components/Header';
 
 function getCategoryById(categoryId) {
-  return categoriesFromServer.find(category => category.id === categoryId) || null;
+  return (
+    categoriesFromServer.find(category => category.id === categoryId) || null
+  );
 }
 
 function getUserById(userId) {
@@ -42,7 +44,10 @@ export const App = () => {
   const [activeOwnerId, setActiveOwnerId] = useState(null);
   const [query, setQuery] = useState('');
 
-  const visibleProducts = getVisibleProducts(products, { ownerId: activeOwnerId, query });
+  const visibleProducts = getVisibleProducts(products, {
+    ownerId: activeOwnerId,
+    query,
+  });
 
   const resetFilters = () => {
     setActiveOwnerId(null);
