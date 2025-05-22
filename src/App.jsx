@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
-import React from 'react';
+import React, { useState } from 'react';
 import './App.scss';
 
 import usersFromServer from './api/users';
@@ -32,10 +32,25 @@ export const products = productsFromServer.map(product => {
   return { ...product, category, owner };
 });
 
-console.log(products);
+function getVisibleProducts({ products, ownerId }) {
+  return products.filter(product => {
+    if (ownerId && product.owner?.id !== ownerId) {
+      return false;
+    }
 
-export const App = () => (
-  <div className="section">
+    return true;
+  });
+}
+
+export const App = () => {
+  const [activeOwnerId, setActiveOwnerId] = useState(null);
+
+  const visibleProducts = getVisibleProducts({
+    products,
+    ownerId: activeOwnerId,
+  });
+
+  return <div className="section">
     <div className="container">
       <h1 className="title">Product Categories</h1>
 
@@ -44,21 +59,17 @@ export const App = () => (
           <p className="panel-heading">Filters</p>
 
           <p className="panel-tabs has-text-weight-bold">
-            <a data-cy="FilterAllUsers" href="#/">
+            <a data-cy="FilterAllUsers" href="#/" onClick={() => setActiveOwnerId(null)}>
               All
             </a>
 
-            <a data-cy="FilterUser" href="#/">
-              User 1
-            </a>
-
-            <a data-cy="FilterUser" href="#/" className="is-active">
-              User 2
-            </a>
-
-            <a data-cy="FilterUser" href="#/">
-              User 3
-            </a>
+            {usersFromServer.map(owner => {
+              return (
+                <a key={owner.id} data-cy="FilterAllUsers" href="#/" onClick={() => setActiveOwnerId(owner.id)}>
+                  {owner.name}
+                </a>
+              );
+            })}
           </p>
 
           <div className="panel-block">
@@ -160,7 +171,7 @@ export const App = () => (
           </thead>
 
           <tbody>
-            {products.map(product => (
+            {visibleProducts.map(product => (
               <tr key={product.id} data-cy="Product">
                 <td className="has-text-weight-bold" data-cy="ProductId">
                   {product.id}
@@ -189,4 +200,4 @@ export const App = () => (
       </div>
     </div>
   </div>
-);
+};
