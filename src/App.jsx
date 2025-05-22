@@ -6,26 +6,18 @@ import usersFromServer from './api/users';
 import categoriesFromServer from './api/categories';
 import productsFromServer from './api/products';
 
-// const products = productsFromServer.map((product) => {
-//   const category = null; // find by product.categoryId
-//   const user = null; // find by category.ownerId
-
-//   return null;
-// });
-
-const COLUMNS = ['ID', 'Product', 'Category', 'User'];
+import { Table } from './components/Table';
+import { Header } from './components/Header';
 
 function getCategoryById(categoryId) {
-  return (
-    categoriesFromServer.find(category => category.id === categoryId) || null
-  );
+  return categoriesFromServer.find(category => category.id === categoryId) || null;
 }
 
 function getUserById(userId) {
   return usersFromServer.find(user => user.id === userId) || null;
 }
 
-export const products = productsFromServer.map(product => {
+const products = productsFromServer.map(product => {
   const category = getCategoryById(product.categoryId);
   const owner = category ? getUserById(category.ownerId) : null;
 
@@ -50,10 +42,7 @@ export const App = () => {
   const [activeOwnerId, setActiveOwnerId] = useState(null);
   const [query, setQuery] = useState('');
 
-  const visibleProducts = getVisibleProducts(products, {
-    ownerId: activeOwnerId,
-    query,
-  });
+  const visibleProducts = getVisibleProducts(products, { ownerId: activeOwnerId, query });
 
   const resetFilters = () => {
     setActiveOwnerId(null);
@@ -68,161 +57,18 @@ export const App = () => {
         <h1 className="title">Product Categories</h1>
 
         <div className="block">
-          <nav className="panel">
-            <p className="panel-heading">Filters</p>
-
-            <p className="panel-tabs has-text-weight-bold">
-              <a
-                data-cy="FilterAllUsers"
-                href="#/"
-                className={!activeOwnerId ? 'is-active' : ''}
-                onClick={() => setActiveOwnerId(null)}
-              >
-                All
-              </a>
-
-              {usersFromServer.map(owner => {
-                return (
-                  <a
-                    key={owner.id}
-                    data-cy="FilterAllUsers"
-                    href="#/"
-                    className={activeOwnerId === owner.id ? 'is-active' : ''}
-                    onClick={() => setActiveOwnerId(owner.id)}
-                  >
-                    {owner.name}
-                  </a>
-                );
-              })}
-            </p>
-
-            <div className="panel-block">
-              <p className="control has-icons-left has-icons-right">
-                <input
-                  data-cy="SearchField"
-                  type="text"
-                  className="input"
-                  placeholder="Search"
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                />
-
-                <span className="icon is-left">
-                  <i className="fas fa-search" aria-hidden="true" />
-                </span>
-
-                <span className="icon is-right">
-                  {query && (
-                    <button
-                      data-cy="ClearButton"
-                      type="button"
-                      className="delete"
-                      onClick={() => setQuery('')}
-                    />
-                  )}
-                </span>
-              </p>
-            </div>
-
-            <div className="panel-block is-flex-wrap-wrap">
-              <a
-                href="#/"
-                data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
-              >
-                All
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 4
-              </a>
-            </div>
-
-            <div className="panel-block">
-              <a
-                data-cy="ResetAllButton"
-                href="#/"
-                onClick={() => {
-                  resetFilters();
-                }}
-                className={`button is-link is-fullwidth ${isNoFilterActive ? 'is-outlined' : ''}`}
-              >
-                Reset all filters
-              </a>
-            </div>
-          </nav>
+          <Header
+            activeOwnerId={activeOwnerId}
+            setActiveOwnerId={setActiveOwnerId}
+            query={query}
+            setQuery={setQuery}
+            resetFilters={resetFilters}
+            isNoFilterActive={isNoFilterActive}
+          />
         </div>
 
         <div className="box table-container">
-          {visibleProducts.length === 0 ? (
-            <p data-cy="NoMatchingMessage">
-              No products matching selected criteria
-            </p>
-          ) : (
-            <table
-              data-cy="ProductTable"
-              className="table is-striped is-narrow is-fullwidth"
-            >
-              <thead>
-                <tr>
-                  {COLUMNS.map(column => (
-                    <th key={column}>
-                      <span className="is-flex is-flex-wrap-nowrap">
-                        {column}
-                        <a href="#/">
-                          <span className="icon">
-                            <i data-cy="SortIcon" className="fas fa-sort" />
-                          </span>
-                        </a>
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {visibleProducts.map(product => (
-                  <tr key={product.id} data-cy="Product">
-                    <td className="has-text-weight-bold" data-cy="ProductId">
-                      {product.id}
-                    </td>
-                    <td data-cy="ProductName">{product.name}</td>
-                    <td data-cy="ProductCategory">
-                      {product.category?.icon} - {product.category?.title}
-                    </td>
-                    <td
-                      data-cy="ProductUser"
-                      className={
-                        product.owner?.sex === 'f'
-                          ? 'has-text-danger'
-                          : 'has-text-link'
-                      }
-                    >
-                      {product.owner?.name}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+          <Table visibleProducts={visibleProducts} />
         </div>
       </div>
     </div>
