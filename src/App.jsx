@@ -55,6 +55,13 @@ export const App = () => {
     query,
   });
 
+  const resetFilters = () => {
+    setActiveOwnerId(null);
+    setQuery('');
+  };
+
+  const isNoFilterActive = !activeOwnerId && query.trim() === '';
+
   return (
     <div className="section">
       <div className="container">
@@ -154,7 +161,10 @@ export const App = () => {
               <a
                 data-cy="ResetAllButton"
                 href="#/"
-                className="button is-link is-outlined is-fullwidth"
+                onClick={() => {
+                  resetFilters();
+                }}
+                className={`button is-link is-fullwidth ${isNoFilterActive ? 'is-outlined' : ''}`}
               >
                 Reset all filters
               </a>
@@ -163,18 +173,18 @@ export const App = () => {
         </div>
 
         <div className="box table-container">
-          <p data-cy="NoMatchingMessage">
-            No products matching selected criteria
-          </p>
-
-          <table
-            data-cy="ProductTable"
-            className="table is-striped is-narrow is-fullwidth"
-          >
-            <thead>
-              <tr>
-                {COLUMNS.map(column => {
-                  return (
+          {visibleProducts.length === 0 ? (
+            <p data-cy="NoMatchingMessage">
+              No products matching selected criteria
+            </p>
+          ) : (
+            <table
+              data-cy="ProductTable"
+              className="table is-striped is-narrow is-fullwidth"
+            >
+              <thead>
+                <tr>
+                  {COLUMNS.map(column => (
                     <th key={column}>
                       <span className="is-flex is-flex-wrap-nowrap">
                         {column}
@@ -185,38 +195,34 @@ export const App = () => {
                         </a>
                       </span>
                     </th>
-                  );
-                })}
-              </tr>
-            </thead>
-
-            <tbody>
-              {visibleProducts.map(product => (
-                <tr key={product.id} data-cy="Product">
-                  <td className="has-text-weight-bold" data-cy="ProductId">
-                    {product.id}
-                  </td>
-
-                  <td data-cy="ProductName">{product.name}</td>
-
-                  <td data-cy="ProductCategory">
-                    {product.category?.icon} - {product.category?.title}
-                  </td>
-
-                  <td
-                    data-cy="ProductUser"
-                    className={
-                      product.owner?.sex === 'f'
-                        ? 'has-text-danger'
-                        : 'has-text-link'
-                    }
-                  >
-                    {product.owner?.name}
-                  </td>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {visibleProducts.map(product => (
+                  <tr key={product.id} data-cy="Product">
+                    <td className="has-text-weight-bold" data-cy="ProductId">
+                      {product.id}
+                    </td>
+                    <td data-cy="ProductName">{product.name}</td>
+                    <td data-cy="ProductCategory">
+                      {product.category?.icon} - {product.category?.title}
+                    </td>
+                    <td
+                      data-cy="ProductUser"
+                      className={
+                        product.owner?.sex === 'f'
+                          ? 'has-text-danger'
+                          : 'has-text-link'
+                      }
+                    >
+                      {product.owner?.name}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
